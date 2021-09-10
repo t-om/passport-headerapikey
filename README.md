@@ -5,6 +5,8 @@
 
 [Passport](http://passportjs.org/) strategy for authenticating with a apikey.
 
+This is a fork of [@hydra-newmedia/passport-headerapikey](https://github.com/hydra-newmedia/passport-headerapikey)
+
 This module lets you authenticate using a apikey in your Node.js
 applications which is used to build rest apis. By plugging into Passport, apikey authentication can be easily and
 unobtrusively integrated into any application or framework that supports

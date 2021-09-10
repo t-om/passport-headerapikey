@@ -1,16 +1,16 @@
 {
-  "name": "passport-headerapikey",
+  "name": "passport-headerapikey-v2",
   "description": "Api key authentication strategy for Passport, which only handles headers (not body fields).",
   "keywords": [
     "apikey",
     "passport",
     "strategy"
   ],
-  "author": "Christian Hotz <hotz@hydra-newmedia.com> ",
-  "version": "1.2.2",
+  "author": "Tom Strudwick",
+  "version": "2.0.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hydra-newmedia/passport-headerapikey.git"
+    "url": "git://github.com/t-om/passport-headerapikey"
   },
   "license": "MIT",
   "main": "lib/index",
