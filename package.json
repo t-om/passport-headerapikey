@@ -24,7 +24,6 @@
     "test": "mocha testDist/* -R nyan --recursive"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
     "passport-strategy": "^1.0.0"
   },
   "devDependencies": {
@@ -35,6 +34,6 @@
     "express": "^4.17.1",
     "mocha": "^6.2.2",
     "sinon": "^1.17.4",
-    "typescript": "^3.0.1"
+    "typescript": "^3.9.10"
   }
 }

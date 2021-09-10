@@ -13,7 +13,6 @@ import { HeaderAPIKeyStrategy } from '../../lib';
 import { Request } from 'express';
 import * as express from 'express';
 import * as sinon from 'sinon';
-import { Strategy } from 'passport-strategy';
 import { BadRequestError } from '../../lib/errors/BadRequestError';
 
 let expect = require('expect.js');
@@ -25,28 +24,33 @@ describe('The HeaderAPIKeyStrategy\'s', () => {
                 verified(null, { username: 'test' });
             };
         it('should set members properly', () => {
-            let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy({ header: 'testheader', prefix: 'asdf' }, true, testVerify);
-            expect(strategy.apiKeyHeader).to.be.ok();
-            expect(strategy.apiKeyHeader).to.eql({ header: 'testheader', prefix: 'asdf' });
+            let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy({ header: 'testheader', prefix: 'asdf', name: 'testname' }, true, testVerify);
+            expect(strategy.options).to.be.ok();
+            expect(strategy.options).to.eql({ header: 'testheader', prefix: 'asdf', name: 'testname' });
             expect(strategy.name).to.be.ok();
-            expect(strategy.name).to.be('headerapikey');
+            expect(strategy.name).to.be('testname');
             expect(strategy.verify).to.be.ok();
             expect(strategy.verify).to.be.a('function');
             expect(strategy.verify).to.equal(testVerify);
             expect(strategy.passReqToCallback).to.be(true);
         });
-        it('should default header member to \'X-Api-Key\' without prefix', () => {
+        it('should default options to \'X-Api-Key\' without prefix and \'headerapikey\' as name', () => {
             let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy(null, true, testVerify);
-            expect(strategy.apiKeyHeader).to.be.ok();
-            expect(strategy.apiKeyHeader).to.eql({ header: 'x-api-key', prefix: '' });
+            expect(strategy.options).to.be.ok();
+            expect(strategy.options).to.eql({ header: 'x-api-key', prefix: '', name: 'headerapikey' });
         });
-        it('should default header prefix to empty, if omitted', () => {
-            let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy({ header: 'apikey', prefix: undefined }, true, testVerify);
-            expect(strategy.apiKeyHeader).to.be.ok();
-            expect(strategy.apiKeyHeader).to.eql({ header: 'apikey', prefix: '' });
+        it('should default prefix to empty, if omitted', () => {
+            let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy({ header: 'apikey', prefix: undefined, name: 'name' }, true, testVerify);
+            expect(strategy.options).to.be.ok();
+            expect(strategy.options).to.eql({ header: 'apikey', prefix: '', name: 'name' });
+        });
+        it('should default name to \'headerapikey\', if omitted', () => {
+            let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy({ header: 'apikey', prefix: undefined, name: undefined }, true, testVerify);
+            expect(strategy.options).to.be.ok();
+            expect(strategy.options).to.eql({ header: 'apikey', prefix: '', name: 'headerapikey' });
         });
         it('should default passReqToCallback member to false', () => {
-            let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy({ header: 'apikey', prefix: ''}, null, testVerify);
+            let strategy: HeaderAPIKeyStrategy = new HeaderAPIKeyStrategy({ header: 'apikey' }, null, testVerify);
             expect(strategy.passReqToCallback).to.be(false);
         });
     });

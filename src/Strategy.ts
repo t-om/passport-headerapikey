@@ -6,63 +6,57 @@
  *  Copyright hydra newmedia GmbH
  */
 
-/**
- *  Imports
- */
-import * as _ from 'lodash';
 import { Request } from 'express';
 import { Strategy as PassportStrategy } from 'passport-strategy';
 import { BadRequestError } from './errors/BadRequestError';
 
+interface Options {
+    header: string
+    prefix?: string,
+    name?: string
+};
+
+type Verify = (apiKey: string, done: (err: Error | null, user?: Object, info?: Object) => void, req?: Request) => void;
+
 export class Strategy extends PassportStrategy {
 
-    apiKeyHeader: { header: string, prefix: string };
+    options: Options;
     name: string;
-    verify: (apiKey: string, verified: (err: Error | null, user?: Object, info?: Object) => void, req?: Request) => void;
+    verify: Verify;
     passReqToCallback: boolean;
 
-    constructor(header: { header: string, prefix: string }, passReqToCallback: boolean,
-                verify: (apiKey: string, verified: (err: Error | null, user?: Object, info?: Object) => void, req?: Request) => void) {
+    constructor(options: Options, passReqToCallback: boolean, verify: Verify) {
         super();
-        this.apiKeyHeader = header || { header: 'X-Api-Key', prefix: '' };
-        if (!this.apiKeyHeader.header) this.apiKeyHeader.header = 'X-Api-Key';
-        if (!this.apiKeyHeader.prefix) this.apiKeyHeader.prefix = '';
-        this.apiKeyHeader.header = this.apiKeyHeader.header.toLowerCase();
 
-        this.name = 'headerapikey';
+        this.options = options || { header: "X-Api-Key" };
+        if (!this.options.header) this.options.header = "X-Api-Key";
+        if (!this.options.prefix) this.options.prefix = "";
+        if (!this.options.name) this.options.name = "headerapikey";
+        this.options.header = this.options.header.toLowerCase();
+
+        this.name = this.options.name;
         this.verify = verify;
         this.passReqToCallback = passReqToCallback || false;
-    }
+    };
 
-    authenticate(req: Request, options?: Object): void {
-        let apiKey: string = _.get(req.headers, this.apiKeyHeader.header) as string;
-        if (!apiKey) {
-            return this.fail(new BadRequestError('Missing API Key'), null);
-        }
+    authenticate(req: Request): void {
+        const { header, prefix } = this.options;
 
-        if (_.startsWith(apiKey, this.apiKeyHeader.prefix)) {
-            apiKey = apiKey.replace(new RegExp('^' + this.apiKeyHeader.prefix), '');
-        } else {
-            return this.fail(
-                new BadRequestError(
-                    'Invalid API Key prefix, ' + this.apiKeyHeader.header + ' header should start with "' + this.apiKeyHeader.prefix + '"'
-                ),
-                null
-            );
-        }
+        let apiKey: string = req.headers[header] as string;
+        if (!apiKey) return this.fail(new BadRequestError("Missing API Key"), null);
 
-        let verified = (err: Error | null, user?: Object, info?: Object) => {
-            if (err) {
-                return this.error(err);
-            }
-            if (!user) {
-                return this.fail(info, null);
-            }
+        if (apiKey.startsWith(prefix)) apiKey = apiKey.replace(new RegExp('^' + prefix), '');
+        else return this.fail(new BadRequestError(`Invalid API Key prefix, ${header} header should start with "${prefix}"`), null);
+
+        const verified = (err: Error | null, user?: Object, info?: Object) => {
+            if (err) return this.error(err);
+            if (!user) return this.fail(info, null);
             this.success(user, info);
         };
 
-        const optionalCallbackParams = [];
+        const optionalCallbackParams = [  ];
         if (this.passReqToCallback) optionalCallbackParams.push(req);
         this.verify(apiKey, verified, ...optionalCallbackParams);
-    }
-}
+    };
+
+};
