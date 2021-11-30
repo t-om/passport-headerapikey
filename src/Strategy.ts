@@ -16,7 +16,9 @@ interface Options {
     name?: string
 };
 
-type Verify = (apiKey: string, done: (err: Error | null, user?: Object, info?: Object) => void, req?: Request) => void;
+type VerifiedCallback = (error: any, user?: any, info?: any) => void;
+
+type Verify = (apiKey: string, done: VerifiedCallback, req?: Request) => void;
 
 export class Strategy extends PassportStrategy {
 
