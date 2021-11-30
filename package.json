@@ -10,7 +10,7 @@
     "name": "Tom Strudwick",
     "email": "tomstrudwick78@gmail.com"
   },
-  "version": "1.3.2",
+  "version": "1.3.3",
   "repository": {
     "type": "git",
     "url": "git://github.com/t-om/passport-headerapikey"
